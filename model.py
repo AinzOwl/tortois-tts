@@ -31,7 +31,6 @@ tortoise_image = (
     .run_function(download_models)
 )
 
-
 @stub.cls(
     image=tortoise_image,
     gpu="A10G",

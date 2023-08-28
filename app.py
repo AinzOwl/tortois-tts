@@ -43,6 +43,7 @@ def post_request(req: Request):
     return Response(content=wav.getvalue(), media_type="audio/wav")
 
 
+@stub.function()
 @web_endpoint()
 def app():
     return web_app
