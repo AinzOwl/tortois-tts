@@ -6,7 +6,7 @@ from fastapi import Request
 from fastapi.responses import Response
 
 from model import TortoiseModal, stub
-from modal import asgi_app
+from modal import wsgi_app
 
 web_app = fastapi.FastAPI()
 web_app.add_middleware(
@@ -17,21 +17,18 @@ web_app.add_middleware(
     allow_headers=["*"],
 )
 
+@web_app.get("/")
+def index():
+    return {"message": "Hello World"}
 
-@web_app.post("/")
-async def post_request(req: Request):
-    body = await req.json()
-    text = body["text"]
-    voices = body["voices"]
-    target_file_web_paths = body.get("target_file", None)
-
-    wav = await TortoiseModal().run_tts.call(text, voices, target_file_web_paths)
+@web_app.get("/tts/{voices}/{text}")
+async def get_request(voices: str, text: str):
+    wav = await TortoiseModal().run_tts.call(text, voices, None)
 
     return Response(content=wav.getvalue(), media_type="audio/wav")
 
-
 @stub.function()
-@asgi_app()
+@wsgi_app()
 def app():
     return web_app
 
