@@ -1,0 +1,7 @@
+modal-client
+black
+isort
+requests
+pydub
+numpy
+fastapi
