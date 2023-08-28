@@ -6,11 +6,8 @@ from fastapi import Request
 from fastapi.responses import Response
 
 from model import TortoiseModal, stub
-from modal import web_endpoint
+from modal import asgi_app
 
-
-
-## Setup FastAPI server.
 web_app = fastapi.FastAPI()
 web_app.add_middleware(
     fastapi.middleware.cors.CORSMiddleware,
@@ -22,29 +19,19 @@ web_app.add_middleware(
 
 
 @web_app.post("/")
-def post_request(req: Request):
-    """
-    POST endpoint for running Tortoise. Checks whether the user exists,
-    and adds usage time to the user's account.
-    """
-    import asyncio
-    import time
-
-    body = asyncio.run(req.json())
+async def post_request(req: Request):
+    body = await req.json()
     text = body["text"]
     voices = body["voices"]
-    api_key = body["api_key"]
     target_file_web_paths = body.get("target_file", None)
 
-    start = time.time()
-    wav = TortoiseModal().run_tts.call(text, voices, target_file_web_paths)
-    end = time.time()
+    wav = await TortoiseModal().run_tts.call(text, voices, target_file_web_paths)
 
     return Response(content=wav.getvalue(), media_type="audio/wav")
 
 
 @stub.function()
-@web_endpoint()
+@asgi_app()
 def app():
     return web_app
 

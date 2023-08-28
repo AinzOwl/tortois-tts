@@ -3,8 +3,7 @@ import os
 import subprocess
 import tempfile
 
-import modal
-
+import modal 
 from modal import method
 
 stub = modal.Stub("tts")
@@ -34,8 +33,6 @@ tortoise_image = (
 @stub.cls(
     image=tortoise_image,
     gpu="A10G",
-    container_idle_timeout=300,
-    timeout=180,
 )
 
 class TortoiseModal:
